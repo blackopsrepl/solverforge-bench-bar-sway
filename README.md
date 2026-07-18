@@ -6,6 +6,8 @@ It uses a Ruby daemon to query persisted benchmark progress through a forced rea
 
 It never launches, stops, retries, repairs, or otherwise mutates benchmarks.
 
+![solverforge-bench-bar QuickShell monitor showing the completed nightly cohort and cached run status](docs/assets/solverforge-bench-bar.png)
+
 ## Version
 
 The current development version is `0.1.0`. `SolverForgeBenchBar::VERSION` in `lib/solverforge_bench_bar.rb` is the application-version source of truth. Config schema version `1` and snapshot schema version `1` evolve independently from the application version.
