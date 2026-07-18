@@ -6,6 +6,10 @@ It uses a Ruby daemon to query persisted benchmark progress through a forced rea
 
 It never launches, stops, retries, repairs, or otherwise mutates benchmarks.
 
+## Version
+
+The current development version is `0.1.0`. `SolverForgeBenchBar::VERSION` in `lib/solverforge_bench_bar.rb` is the application-version source of truth. Config schema version `1` and snapshot schema version `1` evolve independently from the application version.
+
 ## Runtime Shape
 
 ```text
@@ -14,11 +18,12 @@ PostgreSQL SELECT (read-only) --\
 bounded run-log tails --------/               -> QuickShell
 ```
 
-PostgreSQL supplies persisted run and result truth. Log events supply current solver activity and evidence for stale warehouse rows. Raw warehouse status and derived observed state remain separate.
+PostgreSQL supplies persisted run and result truth. Each refresh fetches bounded running candidates, an independently bounded current-nightly cohort, and bounded recent terminal runs. Log events supply current solver activity and evidence for stale warehouse rows. Raw warehouse status and derived observed state remain separate.
 
 ## Commands
 
 ```bash
+solverforge-bench-bar help
 solverforge-bench-bar config init
 solverforge-bench-bar config validate
 solverforge-bench-bar snapshot --format json --pretty
@@ -39,20 +44,20 @@ solverforge-bench-bar waybar render|refresh|panel
 
 Waybar reads cached state only. Live PostgreSQL and log reads happen during `refresh`, `snapshot`, or daemon refresh work.
 
+The state directory is private (`0700`); JSON state and lock files are `0600`. Source failures preserve the last good run data and mark the snapshot source as failed.
+
 ## Install
 
 ```bash
 make check
-make install
 make configure-user
 make install-solverforge-linux-integration
 ```
 
-The SolverForge Linux Waybar module and daemon supervision live in its managed default layer. Do not edit symlinked files under `~/.config/waybar`.
+`make configure-user` installs the application and creates the user config only when it is absent. The integration target installs only the `solverforge-waybar-benchbar` adapter; the `custom/benchbar` module and companion-daemon supervision remain owned by the SolverForge Linux managed default layer. Do not edit symlinked files under `~/.config/waybar`.
 
 ## Validation
 
-`make check` is deterministic and does not contact the live warehouse. Use `make check-live-readonly` only for the explicit forced-read-only live smoke.
+`make check` is deterministic and does not contact the live warehouse. `make release-check` is an alias for that gate. Use `make check-live-readonly` only for the explicit forced-read-only live smoke.
 
 See `WIREFRAME.md` for the shipped interface and runtime contract.
-
