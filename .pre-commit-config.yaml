@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: solverforge-bench-bar-check
+        name: solverforge-bench-bar check
+        entry: make check
+        language: system
+        pass_filenames: false
+        always_run: true
