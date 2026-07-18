@@ -1,0 +1,27 @@
+#!/bin/bash
+
+config_path="${SOLVERFORGE_BENCH_BAR_CONFIG:-$HOME/.config/solverforge-bench-bar/config.json}"
+benchbar_cmd="${SOLVERFORGE_BENCH_BAR_BIN:-$HOME/.local/bin/solverforge-bench-bar}"
+
+if [[ ! -x "$benchbar_cmd" ]] && command -v solverforge-bench-bar &>/dev/null; then
+    benchbar_cmd="$(command -v solverforge-bench-bar)"
+fi
+
+if [[ ! -x "$benchbar_cmd" ]]; then
+    exit 0
+fi
+
+case "${1:-render}" in
+    render)
+        exec "$benchbar_cmd" waybar render --config "$config_path"
+        ;;
+    panel|details|open)
+        exec "$benchbar_cmd" waybar panel --config "$config_path"
+        ;;
+    refresh)
+        exec "$benchbar_cmd" refresh --config "$config_path"
+        ;;
+    *)
+        exec "$benchbar_cmd" waybar render --config "$config_path"
+        ;;
+esac
