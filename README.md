@@ -1,12 +1,12 @@
-# solverforge-bench-bar
+# solverforge-bench-bar-sway
 
-`solverforge-bench-bar` is a read-only Waybar and QuickShell companion for monitoring running `solverforge-bench` workloads in real time.
+`solverforge-bench-bar-sway` is a read-only Sway/Waybar and QuickShell companion for monitoring running `solverforge-bench` workloads in real time. It installs the stable `solverforge-bench-bar` runtime command.
 
 It uses a Ruby daemon to query persisted benchmark progress through a forced read-only PostgreSQL session, inspects bounded tails of the run logs already referenced by the warehouse, writes a cached JSON snapshot, renders a compact Waybar chip, and opens a detailed QuickShell modal.
 
 It never launches, stops, retries, repairs, or otherwise mutates benchmarks.
 
-![solverforge-bench-bar QuickShell monitor showing the completed nightly cohort and cached run status](docs/assets/solverforge-bench-bar.png)
+![solverforge-bench-bar-sway QuickShell monitor showing the completed nightly cohort and cached run status](docs/assets/solverforge-bench-bar-sway.png)
 
 ## Version
 

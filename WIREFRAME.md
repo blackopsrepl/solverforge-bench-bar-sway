@@ -1,6 +1,8 @@
-# solverforge-bench-bar Wireframe
+# solverforge-bench-bar-sway Wireframe
 
 This document defines the shipped Waybar chip, QuickShell modal, CLI, and cached-state contract.
+
+The project is named `solverforge-bench-bar-sway`; its installed runtime command and path family remain `solverforge-bench-bar`.
 
 - Application version: `0.1.0` (unreleased).
 - Config schema version: `1`.

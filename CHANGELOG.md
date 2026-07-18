@@ -9,6 +9,10 @@
 - Strict CLI for config validation, refresh, snapshot, modal state, cached Waybar rendering, and one-shot source checks.
 - SolverForge Linux managed-layer wrapper for `custom/benchbar` actions.
 
+### Changed
+
+- Named the repository project `solverforge-bench-bar-sway` while preserving `solverforge-bench-bar` as its installed runtime identity.
+
 ### Correctness
 
 - Derived active, stalled, unknown, and terminal-drift states without treating warehouse `running` as proof of liveness.

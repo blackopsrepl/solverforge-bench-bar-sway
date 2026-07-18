@@ -1,6 +1,6 @@
 # Architecture
 
-`solverforge-bench-bar` has five layers:
+`solverforge-bench-bar-sway` has five layers:
 
 1. Ruby CLI entrypoint.
 2. Read-only PostgreSQL and bounded run-log adapters.

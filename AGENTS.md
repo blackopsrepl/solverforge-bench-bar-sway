@@ -2,7 +2,8 @@
 
 ## Product Contract
 
-- `solverforge-bench-bar` is a strictly read-only Linux monitor for running `solverforge-bench` workloads.
+- `solverforge-bench-bar-sway` is a strictly read-only Sway/Waybar project for monitoring running `solverforge-bench` workloads.
+- The installed runtime identity remains `solverforge-bench-bar`, including its CLI, Ruby namespace, config, state, and application paths.
 - The supported stack is Ruby + QuickShell QML + Waybar, with a small Bash wrapper for SolverForge Linux integration.
 - PostgreSQL and the run logs referenced by PostgreSQL are observation sources. They are never mutated.
 - The human-facing UI is `frontend/quickshell/shell.qml`. Waybar is a compact cached-state chip and launcher.

@@ -10,7 +10,7 @@ QMLLINT ?= /usr/bin/qmllint
 
 help:
 	@printf '%s\n' \
-		'solverforge-bench-bar targets:' \
+		'solverforge-bench-bar-sway targets:' \
 		'  syntax                                Validate Ruby and Bash syntax' \
 		'  test                                  Run deterministic Ruby tests' \
 		'  smoke                                 Exercise the CLI against isolated fixtures' \
