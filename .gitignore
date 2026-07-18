@@ -1,0 +1,5 @@
+coverage/
+tmp/
+*.log
+!test/fixtures/*.log
+.DS_Store
