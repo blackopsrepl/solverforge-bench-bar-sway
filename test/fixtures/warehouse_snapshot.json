@@ -1,0 +1,85 @@
+{
+  "queried_at": "2026-07-18T14:00:00.000Z",
+  "active_runs": [
+    {
+      "id": "11111111-2222-3333-4444-555555555555",
+      "benchmark_name": "cvrp",
+      "benchmark_category": "list_variable",
+      "run_kind": "candidate",
+      "nightly": true,
+      "status": "running",
+      "created_at": "2026-07-18T01:00:00+00:00",
+      "completed_at": null,
+      "result_count": 2287,
+      "solvers": ["solverforge", "solverforge-py"],
+      "time_limits_seconds": [1, 10, 60],
+      "repo_root": "/srv/lab/dev/solverforge/solverforge-bench",
+      "log_path": "/srv/lab/dev/solverforge/solverforge-bench/logs/cvrp/run.log",
+      "git_commit": "abc123",
+      "git_dirty": true,
+      "metadata": {"watchdog_multiplier": 1.25, "watchdog_grace_seconds": 5.0},
+      "last_row_index": 2287,
+      "last_result_at": "2026-07-18T13:59:00+00:00",
+      "last_instance": "X-n895-k37",
+      "last_solver": "solverforge-py",
+      "last_time_limit_seconds": 60,
+      "last_actual_time_seconds": 60.1,
+      "last_watchdog_killed": false,
+      "last_run_error": null,
+      "last_hard_feasible": true,
+      "run_error_count": 95,
+      "watchdog_kill_count": 95,
+      "infeasible_count": 102,
+      "validation_error_count": 102,
+      "fair_start_failure_count": 0,
+      "wall_time_violation_count": 7,
+      "per_solver": {"solverforge": {"rows": 100, "runErrors": 0}}
+    }
+  ],
+  "cohort_runs": [
+    {
+      "id": "bbbbbbbb-cccc-dddd-eeee-ffffffffffff",
+      "benchmark_name": "employee-scheduling",
+      "benchmark_category": "scalar_variable",
+      "run_kind": "candidate",
+      "nightly": true,
+      "status": "completed",
+      "created_at": "2026-07-18T01:00:01+00:00",
+      "completed_at": "2026-07-18T11:00:00+00:00",
+      "result_count": 504,
+      "solvers": ["solverforge", "solverforge-py"],
+      "time_limits_seconds": [1, 10, 60],
+      "failure_error": null
+    },
+    {
+      "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "benchmark_name": "job-shop-scheduling",
+      "benchmark_category": "scalar_variable",
+      "run_kind": "candidate",
+      "nightly": true,
+      "status": "failed",
+      "created_at": "2026-07-18T01:00:02+00:00",
+      "completed_at": "2026-07-18T12:00:00+00:00",
+      "result_count": 1944,
+      "solvers": ["solverforge", "solverforge-py"],
+      "time_limits_seconds": [1, 10, 60],
+      "failure_error": "could not connect to postgresql://secret:password@db/bench"
+    }
+  ],
+  "recent_runs": [
+    {
+      "id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "benchmark_name": "job-shop-scheduling",
+      "benchmark_category": "scalar_variable",
+      "run_kind": "candidate",
+      "nightly": true,
+      "status": "failed",
+      "created_at": "2026-07-18T01:00:02+00:00",
+      "completed_at": "2026-07-18T12:00:00+00:00",
+      "result_count": 1944,
+      "solvers": ["solverforge", "solverforge-py"],
+      "time_limits_seconds": [1, 10, 60],
+      "failure_error": "could not connect to postgresql://secret:password@db/bench"
+    }
+  ]
+}

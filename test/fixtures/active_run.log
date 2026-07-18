@@ -1,0 +1,4 @@
+2026-07-18T13:58:00+0000 INFO [solverforge_bench.runner] solver_start instance=X-n895-k37 solver=solverforge-py time_limit=60 watchdog=75.0 stdout=/tmp/out stderr=/tmp/err
+2026-07-18T13:59:00+0000 INFO [solverforge_bench.runner] solver_end instance=X-n895-k37 solver=solverforge-py time_limit=60 actual_time=60.100000 watchdog_killed=False run_error=None hard_feasible=True
+2026-07-18T13:59:01+0000 INFO [solverforge_bench.runner] solver_start instance=X-n895-k37 solver=solverforge time_limit=60 watchdog=75.0 stdout=/tmp/out stderr=/tmp/err
+
