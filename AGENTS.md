@@ -50,6 +50,7 @@
 - Keep `SolverForgeBenchBar::VERSION`, the current `CHANGELOG.md` heading, README, AGENTS, and WIREFRAME application-version statements aligned.
 - Do not confuse application version `0.1.0` with config schema `1` or snapshot schema `1`.
 - Do not mark a version released without a corresponding release action or tag; the current `0.1.0` line remains unreleased.
+- Releases run through `commit-and-tag-version` using `.versionrc.js`, which bumps `SolverForgeBenchBar::VERSION` and writes the changelog links. Never hand-edit `CHANGELOG.md`; the first tagged release must keep the curated `0.1.0` baseline notes (release with `--skip.changelog` if no generated section is wanted), and later releases append generated sections.
 
 ## SolverForge Linux Integration
 
