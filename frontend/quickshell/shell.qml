@@ -293,7 +293,7 @@ ShellRoot {
         color: "#10131F"
         border.color: Qt.rgba(accent.r, accent.g, accent.b, 0.45)
         border.width: 1
-        radius: 7
+        radius: 0
 
         ColumnLayout {
             anchors.fill: parent
@@ -346,7 +346,15 @@ ShellRoot {
         color: buttonArea.containsMouse ? Qt.rgba(accent.r, accent.g, accent.b, 0.14) : "#151927"
         border.color: buttonArea.containsMouse ? accent : "#2E344A"
         border.width: 1
-        radius: 6
+        radius: 0
+
+        Behavior on color {
+            ColorAnimation { duration: 110 }
+        }
+
+        Behavior on border.color {
+            ColorAnimation { duration: 110 }
+        }
 
         RowLayout {
             anchors.centerIn: parent
@@ -385,7 +393,7 @@ ShellRoot {
         color: Qt.rgba(accent.r, accent.g, accent.b, 0.11)
         border.color: accent
         border.width: 1
-        radius: 12
+        radius: 0
 
         Text {
             id: badgeText
@@ -407,7 +415,7 @@ ShellRoot {
         color: "#151927"
         border.color: accent
         border.width: 1
-        radius: 6
+        radius: 0
 
         RowLayout {
             anchors.fill: parent
@@ -418,7 +426,7 @@ ShellRoot {
             Rectangle {
                 Layout.preferredWidth: 7
                 Layout.preferredHeight: 7
-                radius: 4
+                radius: 0
                 color: accent
             }
 
@@ -464,6 +472,22 @@ ShellRoot {
             right: 0
         }
 
+        onVisibleChanged: {
+            if (visible) {
+                modalFade.restart()
+            }
+        }
+
+        NumberAnimation {
+            id: modalFade
+            target: card
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 150
+            easing.type: Easing.OutCubic
+        }
+
         Shortcut {
             sequence: "Esc"
             context: Qt.WindowShortcut
@@ -485,6 +509,22 @@ ShellRoot {
             }
 
             Rectangle {
+                anchors.centerIn: parent
+                width: card.width + 10
+                height: card.height + 10
+                radius: 0
+                color: Qt.rgba(0, 0, 0, 0.22)
+            }
+
+            Rectangle {
+                anchors.centerIn: parent
+                width: card.width + 4
+                height: card.height + 4
+                radius: 0
+                color: Qt.rgba(0, 0, 0, 0.34)
+            }
+
+            Rectangle {
                 id: card
                 width: Math.min(1120, Math.max(360, modal.width - 36))
                 height: Math.min(900, Math.max(560, modal.height - 32))
@@ -492,7 +532,7 @@ ShellRoot {
                 color: "#0B0C16"
                 border.color: root.statusColor(root.effectiveStatus)
                 border.width: 1
-                radius: 9
+                radius: 0
 
                 MouseArea {
                     anchors.fill: parent
@@ -502,7 +542,7 @@ ShellRoot {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 1
-                    radius: 8
+                    radius: 0
                     color: "transparent"
                     border.color: "#26304A"
                     border.width: 1
@@ -523,7 +563,7 @@ ShellRoot {
                             color: "#111827"
                             border.color: "#82FB9C"
                             border.width: 1
-                            radius: 8
+                            radius: 0
 
                             Canvas {
                                 anchors.fill: parent
@@ -645,7 +685,7 @@ ShellRoot {
                         color: "#0F1320"
                         border.color: "#242B40"
                         border.width: 1
-                        radius: 7
+                        radius: 0
 
                         ColumnLayout {
                             id: cohortColumn
@@ -706,7 +746,7 @@ ShellRoot {
                         color: "#0F1320"
                         border.color: "#242B40"
                         border.width: 1
-                        radius: 8
+                        radius: 0
 
                         ColumnLayout {
                             anchors.fill: parent
@@ -752,7 +792,7 @@ ShellRoot {
                                     color: index % 2 === 0 ? "#151927" : "#10131F"
                                     border.color: root.displayedRunColor(modelData)
                                     border.width: 1
-                                    radius: 7
+                                    radius: 0
 
                                     RowLayout {
                                         anchors.fill: parent
@@ -763,7 +803,7 @@ ShellRoot {
                                             Layout.preferredWidth: 7
                                             Layout.fillHeight: true
                                             color: root.displayedRunColor(modelData)
-                                            radius: 4
+                                            radius: 0
                                         }
 
                                         ColumnLayout {
@@ -835,13 +875,23 @@ ShellRoot {
                                                 color: "#090B12"
                                                 border.color: "#252B3F"
                                                 border.width: 1
-                                                radius: 4
+                                                radius: 0
 
                                                 Rectangle {
+                                                    id: workFill
                                                     width: parent.width * (modelData.currentWork ? root.workFraction(modelData.currentWork) : 0)
                                                     height: parent.height
-                                                    color: root.snapshotExpired ? root.statusColor("stale") : (root.workFraction(modelData.currentWork) > 0.85 ? "#F2C572" : root.runColor(modelData))
-                                                    radius: 4
+                                                    radius: 0
+                                                    property color fillColor: root.snapshotExpired ? root.statusColor("stale") : (root.workFraction(modelData.currentWork) > 0.85 ? "#F2C572" : root.runColor(modelData))
+
+                                                    Behavior on width {
+                                                        NumberAnimation { duration: 240; easing.type: Easing.OutCubic }
+                                                    }
+
+                                                    gradient: Gradient {
+                                                        GradientStop { position: 0.0; color: Qt.lighter(workFill.fillColor, 1.18) }
+                                                        GradientStop { position: 1.0; color: workFill.fillColor }
+                                                    }
                                                 }
                                             }
 
@@ -920,7 +970,7 @@ ShellRoot {
                                 color: "#10131F"
                                 border.color: root.statusColor(modelData.warehouseStatus || "unknown")
                                 border.width: 1
-                                radius: 6
+                                radius: 0
 
                                 RowLayout {
                                     anchors.fill: parent
@@ -930,7 +980,7 @@ ShellRoot {
                                     Rectangle {
                                         Layout.preferredWidth: 6
                                         Layout.preferredHeight: 6
-                                        radius: 3
+                                        radius: 0
                                         color: root.statusColor(modelData.warehouseStatus || "unknown")
                                     }
 
