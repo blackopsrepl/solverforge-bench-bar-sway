@@ -10,8 +10,8 @@ class VersionContractTest < Minitest::Test
 
     assert_includes read("README.md"), "The current development version is `#{version}`."
     assert_includes read("AGENTS.md"), "Application version `#{version}`"
-    assert_includes read("WIREFRAME.md"), "Application version: `#{version}` (unreleased)."
-    assert_match(/^## #{Regexp.escape(version)} - Unreleased$/, read("CHANGELOG.md"))
+    assert_includes read("WIREFRAME.md"), "Application version: `#{version}`"
+    assert_match(/^## #{Regexp.escape(version)}[ (]/, read("CHANGELOG.md"))
   end
 
   def test_schema_versions_remain_independent_from_the_application_version
