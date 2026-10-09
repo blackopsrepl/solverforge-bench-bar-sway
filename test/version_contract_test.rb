@@ -19,7 +19,7 @@ class VersionContractTest < Minitest::Test
     assert_includes read("README.md"), "The current development version is `#{version}`."
     assert_includes read("AGENTS.md"), "Application version `#{version}`"
     assert_includes read("WIREFRAME.md"), "Application version: `#{version}`"
-    assert_match(/^## #{Regexp.escape(version)}[ (]/, read("CHANGELOG.md"))
+    assert_match(/^## \[?#{Regexp.escape(version)}\]?[ (]/, read("CHANGELOG.md"))
     assert_includes read("docs/configuration.md"), "application version `#{version}`"
     assert_includes read("docs/runtime-contracts.md"), "application version `#{version}`"
   end

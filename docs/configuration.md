@@ -2,7 +2,7 @@
 
 The default config path is `~/.config/solverforge-bench-bar/config.json`.
 
-- `version`: config schema version (`1`), independent from application version `0.1.1` and snapshot schema version `1`.
+- `version`: config schema version (`1`), independent from application version `0.1.2` and snapshot schema version `1`.
 - `source.databaseUrl`: PostgreSQL connection string. `SOLVERFORGE_BENCH_BAR_DATABASE_URL` overrides it without changing the file.
 - `source.psqlCommand`: `psql` executable.
 - `source.connectTimeoutSeconds`: bounded connection timeout.

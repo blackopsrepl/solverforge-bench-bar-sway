@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.1.2](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.1.1...v0.1.2) (2026-10-09)
+
+
+### Bug Fixes
+
+* **version:** assert the released version contract, not an unreleased one ([79ef6bf](https://github.com/blackopsrepl/solverforge-bench-bar-sway/commit/79ef6bf20922e3c20c91cc597c59dd2776a1532e))
+
 ## 0.1.1 (2026-09-17)
 
 

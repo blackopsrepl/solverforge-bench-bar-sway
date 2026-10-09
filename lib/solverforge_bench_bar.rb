@@ -15,6 +15,6 @@ require_relative "solverforge_bench_bar/runtime/waybar"
 require_relative "solverforge_bench_bar/cli"
 
 module SolverForgeBenchBar
-  VERSION = "0.1.1"
+  VERSION = "0.1.2"
 end
 

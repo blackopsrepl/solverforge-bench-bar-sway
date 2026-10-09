@@ -10,7 +10,7 @@ It never launches, stops, retries, repairs, or otherwise mutates benchmarks.
 
 ## Version
 
-The current development version is `0.1.1`. `SolverForgeBenchBar::VERSION` in `lib/solverforge_bench_bar.rb` is the application-version source of truth. Config schema version `1` and snapshot schema version `1` evolve independently from the application version.
+The current development version is `0.1.2`. `SolverForgeBenchBar::VERSION` in `lib/solverforge_bench_bar.rb` is the application-version source of truth. Config schema version `1` and snapshot schema version `1` evolve independently from the application version.
 
 ## Runtime Shape
 

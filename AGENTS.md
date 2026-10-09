@@ -8,7 +8,7 @@
 - PostgreSQL and the run logs referenced by PostgreSQL are observation sources. They are never mutated.
 - The human-facing UI is `frontend/quickshell/shell.qml`. Waybar is a compact cached-state chip and launcher.
 - `snapshot.json`, `ui.json`, and `state-event.json` are the backend/frontend contract.
-- Application version `0.1.1` is owned by `SolverForgeBenchBar::VERSION`; config schema `1` and snapshot schema `1` are independent compatibility contracts.
+- Application version `0.1.2` is owned by `SolverForgeBenchBar::VERSION`; config schema `1` and snapshot schema `1` are independent compatibility contracts.
 
 ## Non-Interference Rules
 
@@ -48,7 +48,7 @@
 ## Versioning
 
 - Keep `SolverForgeBenchBar::VERSION`, the current `CHANGELOG.md` heading, README, AGENTS, and WIREFRAME application-version statements aligned.
-- Do not confuse application version `0.1.1` with config schema `1` or snapshot schema `1`.
+- Do not confuse application version `0.1.2` with config schema `1` or snapshot schema `1`.
 - Do not mark a version released without a corresponding release action or tag.
 - Releases run through `commit-and-tag-version` using `.versionrc.js`, which bumps `SolverForgeBenchBar::VERSION` and writes the changelog links. Never hand-edit `CHANGELOG.md`; the first tagged release must keep the curated `0.1.0` baseline notes (release with `--skip.changelog` if no generated section is wanted), and later releases append generated sections.
 
