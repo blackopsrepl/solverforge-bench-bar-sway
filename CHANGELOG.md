@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.2.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.1.2...v0.2.0) (2026-10-12)
+
+### Features
+
+* **panel:** mac-bar modal — no scrim, no forced focus; tone-dot badges ([598a340](https://github.com/blackopsrepl/solverforge-bench-bar-sway/commit/598a3401178d4648d0b9cd08e29b53d8f07ed271))
+
 ## [0.1.2](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.1.1...v0.1.2) (2026-10-09)
 
 
