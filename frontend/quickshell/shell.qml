@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
 
 ShellRoot {
     id: root
@@ -384,25 +385,35 @@ ShellRoot {
         }
     }
 
+    // Streamlined badge: tone carried by a left dot, not a filled pill —
+    // same glanceable status, less width.
     component StateBadge: Rectangle {
         property string label: "unknown"
         property color accent: root.statusColor(label)
 
-        implicitWidth: badgeText.implicitWidth + 20
-        implicitHeight: 24
-        color: Qt.rgba(accent.r, accent.g, accent.b, 0.11)
-        border.color: accent
-        border.width: 1
-        radius: 0
+        implicitWidth: badgeDot.implicitWidth + 4 + badgeText.implicitWidth + 8
+        implicitHeight: 14
+        color: "transparent"
+
+        Text {
+            id: badgeDot
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            text: "●"
+            color: accent
+            font.family: root.textFont
+            font.pixelSize: 7
+        }
 
         Text {
             id: badgeText
-            anchors.centerIn: parent
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: badgeDot.right
+            anchors.leftMargin: 4
             text: label
             color: accent
             font.family: root.textFont
-            font.pixelSize: 9
-            font.bold: true
+            font.pixelSize: 8
         }
     }
 
@@ -456,7 +467,10 @@ ShellRoot {
         implicitWidth: screen ? screen.width : 1200
         implicitHeight: screen ? screen.height : 820
         color: "transparent"
-        focusable: true
+        // Mac-bar behavior: no focus grab, no backdrop. The input mask is
+        // bound to the card, so clicks outside it reach the desktop.
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+        mask: Region { item: card; intersection: Intersection.Intersect }
         aboveWindows: true
         exclusionMode: ExclusionMode.Ignore
         anchors {
@@ -498,17 +512,6 @@ ShellRoot {
             anchors.fill: parent
 
             Rectangle {
-                anchors.fill: parent
-                color: "#050711"
-                opacity: 0.72
-            }
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: root.closeModal()
-            }
-
-            Rectangle {
                 anchors.centerIn: parent
                 width: card.width + 10
                 height: card.height + 10
@@ -532,7 +535,7 @@ ShellRoot {
                 color: "#0B0C16"
                 border.color: root.statusColor(root.effectiveStatus)
                 border.width: 1
-                radius: 0
+                radius: 4
 
                 MouseArea {
                     anchors.fill: parent
@@ -542,7 +545,7 @@ ShellRoot {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 1
-                    radius: 0
+                    radius: 3
                     color: "transparent"
                     border.color: "#26304A"
                     border.width: 1
