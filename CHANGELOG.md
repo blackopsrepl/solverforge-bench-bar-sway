@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.3.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.2.0...v0.3.0) (2026-10-14)
+
+
+### Features
+
+* **panel:** surface empty states, diagnostics, history ages, and viewport breakpoints ([e437813](https://github.com/blackopsrepl/solverforge-bench-bar-sway/commit/e437813f378e40b3e3f1af8865e4d078870d7273))
+
 ## [0.2.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.1.2...v0.2.0) (2026-10-12)
 
 ### Features
