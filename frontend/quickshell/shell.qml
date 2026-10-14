@@ -706,7 +706,7 @@ ShellRoot {
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 1
-                    radius: 3
+                    radius: 0
                     color: "transparent"
                     border.color: "#26304A"
                     border.width: 1

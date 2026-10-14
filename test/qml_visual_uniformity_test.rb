@@ -7,8 +7,8 @@ require_relative "test_helper"
 # Radii: zero on every shaped surface — the drop-down card, its shadow band,
 # the inner border line, tiles, cohort pills, buttons, run cards, badge
 # backgrounds, progress tracks and fills. Two exemptions are shapes, not
-# corner rounding: the header live dot (7x7 at radius 3.5) and the panel
-# title's 48px corner-block frame line, which stays a 3px hairline. Fonts:
+# corner rounding: the header live dot (7x7 at radius 3.5) is the only
+# circle. Fonts:
 # Switchyard's scale — 7 dot glyph only, 9 secondary/meta, 10 body,
 # 11 card labels, 12 summary values, 15 detail headers, 21 panel titles.
 class QmlVisualUniformityTest < Minitest::Test
@@ -25,8 +25,7 @@ class QmlVisualUniformityTest < Minitest::Test
 
     allowed = lambda do |value|
       value.zero? ||
-        value == 3.5 || # the live/status dot: a circle, not a corner
-        value == 3.0    # the title block's hairline frame, a shape not a corner
+        value == 3.5    # the live/status dot: a circle, not a corner
     end
 
     bad = radii.reject { |value| allowed.call(value) }
@@ -70,8 +69,8 @@ class QmlVisualUniformityTest < Minitest::Test
 
   def test_pre_unification_radii_do_not_survive
     assert_match(/radius:\s*0\b/, qml, "square corners must actually appear in the source")
-    # The old rounded frame, inner line and dot-side radii must be gone; the
-    # dot's 3.5 and the frame hairline's 3 stay as named shapes.
+    # The old rounded frame and card radii must be gone; the dot's 3.5
+    # stays as the one named circle.
     [10, 9, 4, 6, 8].each do |gone|
       bad = qml.scan(/radius:\s*#{Regexp.escape(gone.to_s)}\b(?!\.\d)/)
       assert_empty bad, "the pre-unification radius #{gone} must not survive"
