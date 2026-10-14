@@ -6,7 +6,7 @@
 2. Read-only PostgreSQL and bounded run-log adapters.
 3. Pure run-state classification and presentation.
 4. Atomic cached JSON state under `~/.local/state/solverforge-bench-bar`.
-5. QuickShell modal plus cached-state Waybar renderer.
+5. Bounded bar drop-down QuickShell panel plus cached-state Waybar renderer.
 
 `psql` is the warehouse boundary. The configured PostgreSQL URL is decomposed into libpq environment variables so credentials never appear in process arguments, and every session is forced into read-only transactions with short timeouts. A single query returns bounded running candidates, an independently bounded terminal slice for the current nightly cohort, and bounded recent terminal runs.
 

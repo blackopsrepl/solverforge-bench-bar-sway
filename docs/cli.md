@@ -18,8 +18,8 @@ Common options are `--config PATH`, `--format text|json`, `--pretty`, and `-h`/`
 - `refresh` performs the same refresh and prints only when `--format json` is requested.
 - `daemon` refreshes at `runtime.refreshSeconds`; `daemon --once` performs one refresh and returns nonzero when source observation fails.
 - `panel` writes open UI state and launches the configured QuickShell instance.
-- `ui open|close|toggle|status` changes or reads modal visibility. JSON output is available with `--format json`.
+- `ui open|close|toggle|status` changes or reads panel visibility. JSON output is available with `--format json`.
 - `waybar render` reads cached state only and always emits the Waybar JSON payload.
-- `waybar refresh` performs read-only source observation; `waybar panel` opens the modal.
+- `waybar refresh` performs read-only source observation; `waybar panel` opens the drop-down panel.
 
 `--pretty` affects JSON formatting only. Live PostgreSQL and log observation is confined to `snapshot`, `refresh`, the daemon, and `waybar refresh`.

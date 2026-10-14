@@ -33,36 +33,37 @@ The tooltip includes current suite, instance, solver, nominal limit, elapsed and
 ## QuickShell Modal
 
 ```text
-Full-screen transparent overlay
+Bounded bar drop-down (window surface = the card's rect + 6px halo)
 
-  +--------------------------------------------------------------------+
-  | [!] diagnostics banner (ingest failure or stale snapshot)           |
-  +--------------------------------------------------------------------+
-  | SFB  SolverForge Bench        <status>       Refresh       Close   |
-  |      read-only warehouse and run-log monitor                       |
-  +--------------------------------------------------------------------+
-  | active | cohort suites | persisted rows | attention                |
-  +--------------------------------------------------------------------+
-  | CURRENT NIGHTLY COHORT                                             |
-  | [CVRP active] [Employee completed] [Job shop completed]             |
-  | (pills wrap onto further lines on narrow windows)                   |
-  +--------------------------------------------------------------------+
-  | RUN MONITOR                                                        |
-  | CVRP  active     case 95  trial 8/24      2,287 rows               |
-  | X-n895-k37 / solverforge / 60s       elapsed 34s / watchdog 75s    |
-  | [watchdog rail] run errors 95 watchdog 0 validation 102            |
-  |                 infeasible 0 fair-start 0 wall-time 0              |
-  | ... active, stalled, or unknown live rows ...                       |
-  | empty state (no runs): what appears here, how a run gets recorded  |
-  +--------------------------------------------------------------------+
-  | RECENT TERMINAL RUNS     newest first    [cue: scroll right]       |
-  | [cvrp failed 87d 20h ago 1,944 rows] ...                            |
-  +--------------------------------------------------------------------+
+                ┌ Waybar top strip ────────────────────────────┐
+  (52px)        └──────────────────────────────────────────────┘
+        ┌─────────────────────────────────────────────┐
+        │ [!] diagnostics banner (ingest/stale)        │   ← only when a message is up
+        │ SFB  SolverForge Bench      <status>   ⟨dot⟩ │
+        │      read-only monitor    Refresh    Close   │
+        ├──────────┬────────────┬────────────┬────────┤
+        │ active   │ cohort     │ rows       │ attn   │
+        ├──────────┴────────────┴────────────┴────────┤
+        │ CURRENT NIGHTLY COHORT                       │
+        │ [CVRP active] [Job shop completed]           │
+        ├──────────────────────────────────────────────┤
+        │ RUN MONITOR                                  │
+        │ CVRP  active   case 95  trial 8/24           │
+        │ ... live rows (scrolls inside the band) ...  │
+        │ empty state: what appears here, how recorded │
+        ├──────────────────────────────────────────────┤
+        │ RECENT TERMINAL RUNS     [cue: scroll right] │
+        │ [cvrp failed 87d ago 1,944 rows] ...         │
+        └──────────────────────────────────────────────┘
+        ▲ 6px shadow halo (dismiss strip) — desktop beneath and
+          beside the card stays interactive (no scrim, no overlay)
 ```
 
-Below the breakpoints (`modal.width < 720`, `modal.height < 660`) the card follows the window down to a 360px floor, the modal margins tighten, and the fixed bands shrink; the monitor and history lists scroll within the card instead of pushing past it.
+The layer surface is anchored to only the top and left screen edges; the window is exactly the card plus the halo — full-screen it never is. Height is counted from the laid-out bands (banner 34 only while up, header 48, tiles 70, cohort 112/155, monitor flex 110→300, recent 92/72), floored at 640, capped at 860 and at the room between the bar and the screen edge; the width is content-fit (460 floor, 1120 cap). The card hangs 52px under the bar's top edge and leans left of center, on its chip's side.
 
-Refresh and close are the only modal actions. Escape and an overlay click also close the modal through a runner independent from refresh. CLI toggle support changes only modal visibility. There are no stop, retry, launch, cleanup, or repair actions.
+Below the breakpoint predicates (`modal.width < 720`, `modal.height < 660`, now reading the card-sized window) the margins tighten and the fixed bands shrink; the monitor and history lists scroll within the card instead of pushing past it.
+
+Refresh and close are the only modal actions. Escape, the Close button, and a click inside the window but outside the card all close the modal through a runner independent from refresh. The screen-wide outside-click dismissal of an overlay is not preserved — the bounded surface keeps the desktop beside it interactive, which is the family-standard trade. CLI toggle support changes only modal visibility. There are no stop, retry, launch, cleanup, or repair actions.
 
 ## Run States
 
