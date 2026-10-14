@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.5.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.4.0...v0.5.0) (2026-10-14)
+
+
+### Bug Fixes
+
+* **qml:** square the mac-bar surfaces, hold Switchyard's font scale ([500512f](https://github.com/blackopsrepl/solverforge-bench-bar-sway/commit/500512fe9d109da8a82f34e68e6e57b81e9f09c5))
+
 ## [0.4.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.3.0...v0.4.0) (2026-10-14)
 
 
