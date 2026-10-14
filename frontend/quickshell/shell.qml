@@ -42,11 +42,64 @@ ShellRoot {
     }
     property string effectiveStatus: snapshotExpired ? "stale" : (snapshotAdapter.status || "loading")
     // Breakpoint pattern borrowed from Switchyard and named in BenchBar's
-    // vocabulary: narrowLayout is a window-width predicate, shortViewport a
-    // window-height predicate (modal is the full-screen PanelWindow).
+    // vocabulary: narrowLayout is a card-width predicate, shortViewport a
+    // card-height predicate. The PanelWindow is bounded to the card itself,
+    // so modal.width/height are the card's rect, not the screen.
     property bool narrowLayout: modal.width < 720
     property bool shortViewport: modal.height < 660
+    // The height counter must not read shortViewport — the window's height
+    // derives from the counted card height, so a window-read back into the
+    // count is a binding loop. It derives the same tight-layout decision from
+    // the room the drop-down can actually occupy (screen minus the bar strip
+    // and a breathing gap), which is what shortViewport measures.
+    readonly property bool countedShortViewport: (modal.screen ? modal.screen.height : 820) - root.popupTopMargin - 26 < 660
     property string diagnosticsMessage: root.ingestMessage()
+
+    // Bar drop-down geometry. The layer surface is bounded to exactly the
+    // card's rect plus a 6px shadow halo at its bottom edge, hung under the
+    // bar's top edge — no screen-covering overlay, no scrim, no backdrop
+    // catcher: the desktop beside the card stays interactive because clicks
+    // never pass through a Wayland surface outside it. ExclusionMode.Ignore
+    // keeps the surface out of the bar's layout math, and OnDemand keeps
+    // opening the drop-down from stealing keyboard focus.
+    property int popupTopMargin: 52
+    property int popupMinWidth: 460
+    property int popupMaxWidth: 1120
+    property int popupMinHeight: 640
+    property int popupMaxHeight: 860
+    readonly property int dropCardWidth: Math.min(popupMaxWidth, Math.max(popupMinWidth, (modal.screen ? modal.screen.width : 1440) - 36))
+
+    // The chip lives in the bar's left cluster, so the drop-down leans left of
+    // center; clamped to the screen edges on narrow displays.
+    function dropLeftOffset() {
+        var screen = modal.screen
+        var width = screen ? screen.width : 1440
+        return Math.max(12, Math.min(width - root.dropCardWidth - 12, Math.round(width / 2 - root.dropCardWidth / 2 - width * 0.06)))
+    }
+
+    function benchbarCardHeight() {
+        // Counted from the parts actually laid out, never from implicit sizes:
+        // diagnostics banner (34 only while a message is up) + header row (48)
+        // + metric tiles (70) + cohort band (112, or 155 once a cohort wraps)
+        // + monitor band + recent band (92, or 72 when the room tightens).
+        // The monitor band carries the flex: it takes its 300px working
+        // target when the sum fits and collapses to its 110px layout minimum
+        // when the room is tight, so the card never overlaps the screen's
+        // bottom edge and its lists scroll instead of pushing the surface.
+        var banner = root.diagnosticsMessage.length > 0 ? 34 : 0
+        var cohort_band = (root.cohort.runs && root.cohort.runs.length > 6) ? 155 : 112
+        var recent_band = root.countedShortViewport ? 72 : 92
+        var fixed_bands = banner + 48 + 74 + cohort_band + recent_band
+        var screen = modal.screen
+        var available_window = Math.max(360, (screen ? screen.height : 820) - root.popupTopMargin - 6 - 24)
+        var monitor_band = root.countedShortViewport
+            ? 110
+            : Math.min(300, Math.max(240, available_window - fixed_bands))
+        var content_height = fixed_bands + monitor_band
+        return Math.min(root.popupMaxHeight, Math.max(root.popupMinHeight, content_height), available_window)
+    }
+
+    readonly property int dropCardHeight: root.benchbarCardHeight()
 
     function runBenchbar(args) {
         if (actionRunner.running) {
@@ -566,26 +619,26 @@ ShellRoot {
         id: modal
         visible: uiAdapter.open
         screen: Quickshell.screens.length ? Quickshell.screens[0] : null
-        implicitWidth: screen ? screen.width : 1200
-        implicitHeight: screen ? screen.height : 820
+        // Bounded bar drop-down, not a screen overlay: anchored to only the
+        // top and left screen edges, the layer surface is exactly the card's
+        // rect plus a 6px shadow halo at the bottom edge. Clicks never pass
+        // through a Wayland surface, so the desktop outside this strip stays
+        // fully interactive — the card is a bar companion, not a modal.
+        implicitWidth: root.dropCardWidth
+        implicitHeight: root.dropCardHeight + 6
         color: "transparent"
-        // Mac-bar behavior: no focus grab, no backdrop. The input mask is
-        // bound to the card, so clicks outside it reach the desktop.
+        // No focus grab: opening the drop-down must not steal the shortcut
+        // focus from whatever the operator is doing.
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-        mask: Region { item: card; intersection: Intersection.Intersect }
         aboveWindows: true
         exclusionMode: ExclusionMode.Ignore
         anchors {
             top: true
-            bottom: true
             left: true
-            right: true
         }
         margins {
-            top: 0
-            bottom: 0
-            left: 0
-            right: 0
+            top: root.popupTopMargin
+            left: root.dropLeftOffset()
         }
 
         onVisibleChanged: {
@@ -613,35 +666,34 @@ ShellRoot {
         Item {
             anchors.fill: parent
 
-            Rectangle {
-                anchors.centerIn: parent
-                width: card.width + 10
-                height: card.height + 10
-                radius: 0
-                color: Qt.rgba(0, 0, 0, 0.22)
+            // The window-sized click-catcher for dismissal: clicking inside
+            // the surface but outside the card (the bottom halo strip and any
+            // corner gap) closes the drop-down. The card swallows its own
+            // clicks beneath this, so real content clicks never close it.
+            MouseArea {
+                anchors.fill: parent
+                z: -1
+                onClicked: root.closeModal()
             }
 
             Rectangle {
-                anchors.centerIn: parent
-                width: card.width + 4
-                height: card.height + 4
-                radius: 0
-                color: Qt.rgba(0, 0, 0, 0.34)
+                id: frameShadow
+                anchors.fill: parent
+                anchors.topMargin: 5
+                anchors.bottomMargin: 0
+                color: Qt.rgba(0, 0, 0, 0.35)
+                radius: 10
+                visible: uiAdapter.open
             }
 
             Rectangle {
                 id: card
-                width: root.narrowLayout ? Math.max(320, modal.width - 16) : Math.min(1120, Math.max(360, modal.width - 36))
-                // Relaxed viewports keep the airy 560 floor (centered, clamped
-                // to ±16px); below the short breakpoint the card follows the
-                // viewport down to 360 so the outer frame never leaves the
-                // screen — the inner lists scroll instead.
-                height: root.shortViewport ? Math.max(360, modal.height - 16) : Math.min(900, Math.max(560, modal.height - 32))
-                anchors.centerIn: parent
+                anchors.fill: parent
+                anchors.bottomMargin: 6
                 color: "#0B0C16"
                 border.color: root.statusColor(root.effectiveStatus)
                 border.width: 1
-                radius: 4
+                radius: 10
 
                 MouseArea {
                     anchors.fill: parent
@@ -721,14 +773,33 @@ ShellRoot {
                             Layout.fillWidth: true
                             spacing: 3
 
-                            Text {
-                                Layout.fillWidth: true
-                                text: "solverforge-bench-bar"
-                                color: "#DDF7FF"
-                                font.family: root.textFont
-                                font.pixelSize: 24
-                                font.bold: true
-                                elide: Text.ElideRight
+                            Row {
+                                spacing: 8
+
+                                Text {
+                                    text: "solverforge-bench-bar"
+                                    color: "#DDF7FF"
+                                    font.family: root.textFont
+                                    font.pixelSize: 24
+                                    font.bold: true
+                                    elide: Text.ElideRight
+                                }
+
+                                // Live dot: the panel is a live view; the dot
+                                // carries the snapshot's own status tone so
+                                // the header and the card border agree, going
+                                // amber while a refresh or close command is
+                                // in flight.
+                                Rectangle {
+                                    id: liveDot
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    width: 7
+                                    height: 7
+                                    radius: 3.5
+                                    color: actionRunner.running || closeRunner.running
+                                        ? "#F2C572"
+                                        : root.statusColor(root.effectiveStatus)
+                                }
                             }
 
                             Text {
