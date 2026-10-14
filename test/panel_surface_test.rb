@@ -45,17 +45,20 @@ class PanelSurfaceTest < Minitest::Test
     refute_includes panel_source, "height: card.height + 4"
   end
 
-  def test_height_is_counted_from_laid_out_parts_and_capped_at_the_viewport
-    assert_includes panel_source, "function benchbarCardHeight()"
-    # Bands counted at their laid-out sizes: banner when present, 48 header,
-    # 74 tiles, the cohort band, and the recent band — never a viewport-sized
-    # sum. popupTopMargin and the 6px halo live in the WINDOW's height, not in
-    # the card's counted content height.
-    assert_includes panel_source, "var fixed_bands = banner + 48 + 74 + cohort_band + recent_band"
-    assert_includes panel_source, "var content_height = fixed_bands + monitor_band"
-    assert_includes panel_source, "recent_band = root.countedShortViewport ? 72 : 92"
-    assert_includes panel_source, "Math.min(root.popupMaxHeight, Math.max(root.popupMinHeight, content_height), available_window)"
-    assert_includes panel_source, "implicitHeight: root.dropCardHeight + 6"
+  def test_height_is_content_fit_and_capped_at_the_viewport
+  assert_includes panel_source, "function benchbarCardHeight()"
+  # Content-fit (like the width): implicit content height floored at
+  # popupMinHeight, capped at popupMaxHeight and the screen's remaining
+  # room. The monitor band carries the flex through fillHeight, so a
+  # counted-versus-laid-out drift can never strand a dead strip.
+  assert_includes panel_source, "var content_height = 2 * margin + cardColumn.implicitHeight + monitor_band"
+  # The fill-height monitor band contributes 0 to the column's implicit
+  # height, so its size must be added explicitly; the dense branch keeps its
+  # 240 layout minimum.
+  assert_includes panel_source, "? 110\n            : Math.max(240, available_window - cardColumn.implicitHeight - 2 * margin)"
+  assert_match(/id: cardColumn\s*\n\s*anchors\.fill: parent\s*\n\s*anchors\.margins: root\.shortViewport \? 10 : 18/, panel_source)
+  assert_includes panel_source, "Math.min(root.popupMaxHeight, Math.max(root.popupMinHeight, content_height), available_window)"
+  assert_includes panel_source, "implicitHeight: root.dropCardHeight + 6"
   end
 
   def test_width_is_content_fit_with_a_floor_and_a_cap

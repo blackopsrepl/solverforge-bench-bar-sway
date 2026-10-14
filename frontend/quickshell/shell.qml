@@ -66,7 +66,7 @@ ShellRoot {
     property int popupMinWidth: 460
     property int popupMaxWidth: 1120
     property int popupMinHeight: 640
-    property int popupMaxHeight: 860
+    property int popupMaxHeight: 1180
     readonly property int dropCardWidth: Math.min(popupMaxWidth, Math.max(popupMinWidth, (modal.screen ? modal.screen.width : 1440) - 36))
 
     // The chip lives in the bar's left cluster, so the drop-down leans left of
@@ -78,24 +78,21 @@ ShellRoot {
     }
 
     function benchbarCardHeight() {
-        // Counted from the parts actually laid out, never from implicit sizes:
-        // diagnostics banner (34 only while a message is up) + header row (48)
-        // + metric tiles (70) + cohort band (112, or 155 once a cohort wraps)
-        // + monitor band + recent band (92, or 72 when the room tightens).
-        // The monitor band carries the flex: it takes its 300px working
-        // target when the sum fits and collapses to its 110px layout minimum
-        // when the room is tight, so the card never overlaps the screen's
-        // bottom edge and its lists scroll instead of pushing the surface.
-        var banner = root.diagnosticsMessage.length > 0 ? 34 : 0
-        var cohort_band = (root.cohort.runs && root.cohort.runs.length > 6) ? 155 : 112
-        var recent_band = root.countedShortViewport ? 72 : 92
-        var fixed_bands = banner + 48 + 74 + cohort_band + recent_band
+        // Content-fit, like the width: the fixed bands' real laid-out height
+        // comes from cardColumn.implicitHeight (their preferred heights plus
+        // the inter-band spacings — the fill-height monitor band contributes
+        // 0 to it, so its size is added explicitly), floored at popupMinHeight
+        // and capped at the screen's remaining room. The monitor band absorbs
+        // whatever the screen offers beyond that content through fillHeight
+        // and scrolls inside it, so no hand-counted constant can drift away
+        // from the laid-out bands and strand a dead strip below the recent row.
         var screen = modal.screen
         var available_window = Math.max(360, (screen ? screen.height : 820) - root.popupTopMargin - 6 - 24)
+        var margin = root.countedShortViewport ? 10 : 18
         var monitor_band = root.countedShortViewport
             ? 110
-            : Math.min(300, Math.max(240, available_window - fixed_bands))
-        var content_height = fixed_bands + monitor_band
+            : Math.max(240, available_window - cardColumn.implicitHeight - 2 * margin)
+        var content_height = 2 * margin + cardColumn.implicitHeight + monitor_band
         return Math.min(root.popupMaxHeight, Math.max(root.popupMinHeight, content_height), available_window)
     }
 
@@ -713,6 +710,7 @@ ShellRoot {
                 }
 
                 ColumnLayout {
+                    id: cardColumn
                     anchors.fill: parent
                     anchors.margins: root.shortViewport ? 10 : 18
                     spacing: root.shortViewport ? 8 : 12

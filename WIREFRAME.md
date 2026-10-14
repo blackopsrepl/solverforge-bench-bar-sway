@@ -59,7 +59,7 @@ Bounded bar drop-down (window surface = the card's rect + 6px halo)
           beside the card stays interactive (no scrim, no overlay)
 ```
 
-The layer surface is anchored to only the top and left screen edges; the window is exactly the card plus the halo — full-screen it never is. Height is counted from the laid-out bands (banner 34 only while up, header 48, tiles 70, cohort 112/155, monitor flex 110→300, recent 92/72), floored at 640, capped at 860 and at the room between the bar and the screen edge; the width is content-fit (460 floor, 1120 cap). The card hangs 52px under the bar's top edge and leans left of center, on its chip's side.
+The layer surface is anchored to only the top and left screen edges; the window is exactly the card plus the halo — full-screen it never is. Height is counted from the laid-out bands (banner 34 only while up, header 48, tiles 70, cohort 112/155, monitor flex 110→560, recent 92/72), floored at 640, capped at 1180 and at the room between the bar and the screen edge; the width is content-fit (460 floor, 1120 cap). The card hangs 52px under the bar's top edge and leans left of center, on its chip's side.
 
 Below the breakpoint predicates (`modal.width < 720`, `modal.height < 660`, now reading the card-sized window) the margins tighten and the fixed bands shrink; the monitor and history lists scroll within the card instead of pushing past it.
 
