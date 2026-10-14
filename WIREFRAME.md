@@ -4,7 +4,7 @@ This document defines the shipped Waybar chip, QuickShell modal, CLI, and cached
 
 The project is named `solverforge-bench-bar-sway`; its installed runtime command and path family remain `solverforge-bench-bar`.
 
-- Application version: `0.4.0`.
+- Application version: `0.5.0`.
 - Config schema version: `1`.
 - Snapshot schema version: `1`.
 
