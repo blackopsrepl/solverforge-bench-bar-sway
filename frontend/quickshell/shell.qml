@@ -41,6 +41,12 @@ ShellRoot {
         return isNaN(generated) || root.nowMilliseconds - generated > root.staleAfterSeconds * 1000
     }
     property string effectiveStatus: snapshotExpired ? "stale" : (snapshotAdapter.status || "loading")
+    // Breakpoint pattern borrowed from Switchyard and named in BenchBar's
+    // vocabulary: narrowLayout is a window-width predicate, shortViewport a
+    // window-height predicate (modal is the full-screen PanelWindow).
+    property bool narrowLayout: modal.width < 720
+    property bool shortViewport: modal.height < 660
+    property string diagnosticsMessage: root.ingestMessage()
 
     function runBenchbar(args) {
         if (actionRunner.running) {
@@ -169,6 +175,38 @@ ShellRoot {
             return "waiting for cached data"
         }
         return (root.snapshotExpired ? "stale cache " : "snapshot ") + snapshotAdapter.generatedAt.replace("T", " ").replace("Z", " UTC")
+    }
+
+    function humanizeAge(iso) {
+        var then = Date.parse(iso || "")
+        if (isNaN(then)) {
+            return ""
+        }
+        var age = Math.max(0, Math.round((root.nowMilliseconds - then) / 1000))
+        if (age < 60) {
+            return age + "s ago"
+        }
+        if (age < 3600) {
+            return Math.floor(age / 60) + "m ago"
+        }
+        if (age < 86400) {
+            return Math.floor(age / 3600) + "h " + Math.floor((age % 3600) / 60) + "m ago"
+        }
+        return Math.floor(age / 86400) + "d " + Math.floor((age % 86400) / 3600) + "h ago"
+    }
+
+    function ingestMessage() {
+        if (root.source.status === "error") {
+            return "Warehouse snapshot failed: " + (root.source.error || "read-only warehouse source unavailable") + ". Cached data below is unchanged."
+        }
+        if (root.snapshotExpired) {
+            return "Snapshot is stale: last refresh " + (root.humanizeAge(snapshotAdapter.generatedAt) || "of unknown age") + ". Cached data below may be outdated."
+        }
+        return ""
+    }
+
+    function pendingTitle() {
+        return snapshotAdapter.generatedAt ? "No benchmark run is active." : "Waiting for the first snapshot."
     }
 
     Process {
@@ -421,14 +459,15 @@ ShellRoot {
         property var run: null
         property color accent: root.runColor(run)
 
-        Layout.fillWidth: true
-        Layout.preferredHeight: 42
+        implicitWidth: pillRow.implicitWidth + 20
+        implicitHeight: 42
         color: "#151927"
         border.color: accent
         border.width: 1
         radius: 0
 
         RowLayout {
+            id: pillRow
             anchors.fill: parent
             anchors.leftMargin: 10
             anchors.rightMargin: 10
@@ -456,6 +495,69 @@ ShellRoot {
                 color: accent
                 font.family: root.textFont
                 font.pixelSize: 9
+            }
+        }
+    }
+
+    // Pills wrap onto further lines instead of one unbounded row: the cohort
+    // band grows with content and the modal column reflows the cards below it
+    // (Layout.preferredHeight derives from the wrapping flow's implicit
+    // height), so a narrow viewport never horizontally overflows.
+    component CohortFlow: Flow {
+        spacing: 8
+
+        Repeater {
+            model: root.cohort.runs || []
+            CohortPill {
+                run: modelData
+            }
+        }
+
+        Text {
+            visible: !(root.cohort.runs && root.cohort.runs.length)
+            text: "No cohort data is available in the current snapshot."
+            color: "#6A6E95"
+            font.family: root.textFont
+            font.pixelSize: 10
+        }
+    }
+
+    // Diagnostics banner: ingest failure or stale data is surfaced at the top
+    // instead of rendering cached numbers silently. Read-only by contract —
+    // it exposes state, it never triggers or controls anything.
+    component DiagnosticsBanner: Rectangle {
+        property string message: ""
+
+        Layout.fillWidth: true
+        Layout.preferredHeight: root.diagnosticsMessage.length > 0 ? 34 : 0
+        visible: root.diagnosticsMessage.length > 0
+        color: "#1A1420"
+        border.color: root.source.status === "error" ? "#E06C75" : root.statusColor("stale")
+        border.width: 1
+        radius: 0
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            spacing: 8
+
+            Text {
+                text: "!"
+                color: root.source.status === "error" ? "#E06C75" : root.statusColor("stale")
+                font.family: root.textFont
+                font.pixelSize: 11
+                font.bold: true
+            }
+
+            Text {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                text: message
+                color: root.source.status === "error" ? "#E06C75" : "#F2C572"
+                font.family: root.textFont
+                font.pixelSize: 10
+                elide: Text.ElideRight
             }
         }
     }
@@ -529,8 +631,12 @@ ShellRoot {
 
             Rectangle {
                 id: card
-                width: Math.min(1120, Math.max(360, modal.width - 36))
-                height: Math.min(900, Math.max(560, modal.height - 32))
+                width: root.narrowLayout ? Math.max(320, modal.width - 16) : Math.min(1120, Math.max(360, modal.width - 36))
+                // Relaxed viewports keep the airy 560 floor (centered, clamped
+                // to ±16px); below the short breakpoint the card follows the
+                // viewport down to 360 so the outer frame never leaves the
+                // screen — the inner lists scroll instead.
+                height: root.shortViewport ? Math.max(360, modal.height - 16) : Math.min(900, Math.max(560, modal.height - 32))
                 anchors.centerIn: parent
                 color: "#0B0C16"
                 border.color: root.statusColor(root.effectiveStatus)
@@ -553,8 +659,12 @@ ShellRoot {
 
                 ColumnLayout {
                     anchors.fill: parent
-                    anchors.margins: 18
-                    spacing: 12
+                    anchors.margins: root.shortViewport ? 10 : 18
+                    spacing: root.shortViewport ? 8 : 12
+
+                    DiagnosticsBanner {
+                        message: root.diagnosticsMessage
+                    }
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -719,25 +829,8 @@ ShellRoot {
                                 }
                             }
 
-                            RowLayout {
+                            CohortFlow {
                                 Layout.fillWidth: true
-                                spacing: 8
-
-                                Repeater {
-                                    model: root.cohort.runs || []
-                                    CohortPill {
-                                        run: modelData
-                                    }
-                                }
-
-                                Text {
-                                    visible: !(root.cohort.runs && root.cohort.runs.length)
-                                    Layout.fillWidth: true
-                                    text: "No cohort data is available in the current snapshot."
-                                    color: "#6A6E95"
-                                    font.family: root.textFont
-                                    font.pixelSize: 10
-                                }
                             }
                         }
                     }
@@ -745,7 +838,7 @@ ShellRoot {
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        Layout.minimumHeight: 240
+                        Layout.minimumHeight: root.shortViewport ? 110 : 240
                         color: "#0F1320"
                         border.color: "#242B40"
                         border.width: 1
@@ -841,7 +934,7 @@ ShellRoot {
                                                 }
                                             }
 
-                                            RowLayout {
+                                            Flow {
                                                 Layout.fillWidth: true
                                                 spacing: 12
 
@@ -922,11 +1015,52 @@ ShellRoot {
 
                                 Text {
                                     anchors.centerIn: parent
-                                    visible: root.monitorRuns.length === 0
-                                    text: source.status === "error" ? (source.error || "warehouse source unavailable") : "No benchmark run is active."
-                                    color: source.status === "error" ? "#E06C75" : "#6A6E95"
+                                    visible: root.monitorRuns.length === 0 && root.source.status === "error"
+                                    text: root.source.error || "warehouse source unavailable"
+                                    color: "#E06C75"
                                     font.family: root.textFont
                                     font.pixelSize: 11
+                                }
+
+                                Column {
+                                    id: emptyStateColumn
+                                    anchors.centerIn: parent
+                                    visible: root.monitorRuns.length === 0
+                                    spacing: 6
+                                    width: 400
+
+                                    Text {
+                                        width: emptyStateColumn.width
+                                        horizontalAlignment: Text.AlignHCenter
+                                        text: root.source.status === "error" ? (root.source.error || "warehouse source unavailable") : (root.pendingTitle())
+                                        color: root.source.status === "error" ? "#E06C75" : "#6A6E95"
+                                        font.family: root.textFont
+                                        font.pixelSize: 11
+                                        font.bold: true
+                                        wrapMode: Text.WordWrap
+                                    }
+
+                                    Text {
+                                        width: emptyStateColumn.width
+                                        horizontalAlignment: Text.AlignHCenter
+                                        visible: root.source.status !== "error"
+                                        text: "Live run cards appear here once the warehouse records a running nightly cohort."
+                                        color: "#6A6E95"
+                                        font.family: root.textFont
+                                        font.pixelSize: 10
+                                        wrapMode: Text.WordWrap
+                                    }
+
+                                    Text {
+                                        width: emptyStateColumn.width
+                                        horizontalAlignment: Text.AlignHCenter
+                                        visible: root.source.status !== "error"
+                                        text: "How it gets recorded: as soon as a benchmark writes its first warehouse rows, the daemon classifies it and a live run card appears here."
+                                        color: "#6A6E95"
+                                        font.family: root.textFont
+                                        font.pixelSize: 10
+                                        wrapMode: Text.WordWrap
+                                    }
                                 }
                             }
                         }
@@ -934,7 +1068,11 @@ ShellRoot {
 
                     ColumnLayout {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 76
+                        // Fixed height computed from parts (heading + one card row
+                        // + scrollbar allowance), never from recentList.height —
+                        // a preferred-height binding that reads its own list's
+                        // resolved height is a layout cycle that collapses the band.
+                        Layout.preferredHeight: root.shortViewport ? 72 : 92
                         spacing: 6
 
                         RowLayout {
@@ -947,11 +1085,20 @@ ShellRoot {
                                 font.family: root.textFont
                                 font.pixelSize: 9
                                 font.bold: true
+                                elide: Text.ElideRight
                             }
 
                             Text {
                                 text: (summary.recentFailureCount || 0) + " recent failures"
                                 color: (summary.recentFailureCount || 0) > 0 ? "#E06C75" : "#6A6E95"
+                                font.family: root.textFont
+                                font.pixelSize: 9
+                            }
+
+                            Text {
+                                visible: recentList.contentWidth > recentList.width
+                                text: "scroll right for more runs"
+                                color: "#6A6E95"
                                 font.family: root.textFont
                                 font.pixelSize: 9
                             }
@@ -965,13 +1112,18 @@ ShellRoot {
                             model: root.recentRuns
                             clip: true
                             spacing: 8
+                            ScrollBar.horizontal: ScrollBar {
+                                id: recentScrollBar
+                                policy: ScrollBar.AsNeeded
+                            }
 
                             delegate: Rectangle {
+                                id: recentCard
                                 required property var modelData
                                 width: 236
                                 height: 48
                                 color: "#10131F"
-                                border.color: root.statusColor(modelData.warehouseStatus || "unknown")
+                                border.color: root.statusColor(recentCard.modelData.warehouseStatus || "unknown")
                                 border.width: 1
                                 radius: 0
 
@@ -984,7 +1136,7 @@ ShellRoot {
                                         Layout.preferredWidth: 6
                                         Layout.preferredHeight: 6
                                         radius: 0
-                                        color: root.statusColor(modelData.warehouseStatus || "unknown")
+                                        color: root.statusColor(recentCard.modelData.warehouseStatus || "unknown")
                                     }
 
                                     ColumnLayout {
@@ -992,8 +1144,8 @@ ShellRoot {
                                         spacing: 1
 
                                         Text {
-                                            Layout.fillWidth: true
-                                            text: modelData.benchmarkLabel || modelData.benchmarkName || "benchmark"
+                                            Layout.maximumWidth: 200
+                                            text: recentCard.modelData.benchmarkLabel || modelData.benchmarkName || "benchmark"
                                             color: "#DDF7FF"
                                             font.family: root.textFont
                                             font.pixelSize: 9
@@ -1003,14 +1155,23 @@ ShellRoot {
 
                                         Text {
                                             Layout.fillWidth: true
-                                            text: (modelData.warehouseStatus || "unknown") + "   " + root.compactNumber(modelData.resultCount || 0) + " rows"
-                                            color: root.statusColor(modelData.warehouseStatus || "unknown")
+                                            text: (recentCard.modelData.warehouseStatus || "unknown") + "   " + root.humanizeAge(recentCard.modelData.completedAt || recentCard.modelData.createdAt) + "   " + root.compactNumber(recentCard.modelData.resultCount || 0) + " rows"
+                                            color: root.statusColor(recentCard.modelData.warehouseStatus || "unknown")
                                             font.family: root.textFont
                                             font.pixelSize: 8
                                             elide: Text.ElideRight
                                         }
                                     }
                                 }
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                visible: root.recentRuns.length === 0
+                                text: "No terminal run history is cached yet. Completed and failed runs appear here newest first."
+                                color: "#6A6E95"
+                                font.family: root.textFont
+                                font.pixelSize: 10
                             }
                         }
                     }

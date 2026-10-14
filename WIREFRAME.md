@@ -36,6 +36,8 @@ The tooltip includes current suite, instance, solver, nominal limit, elapsed and
 Full-screen transparent overlay
 
   +--------------------------------------------------------------------+
+  | [!] diagnostics banner (ingest failure or stale snapshot)           |
+  +--------------------------------------------------------------------+
   | SFB  SolverForge Bench        <status>       Refresh       Close   |
   |      read-only warehouse and run-log monitor                       |
   +--------------------------------------------------------------------+
@@ -43,6 +45,7 @@ Full-screen transparent overlay
   +--------------------------------------------------------------------+
   | CURRENT NIGHTLY COHORT                                             |
   | [CVRP active] [Employee completed] [Job shop completed]             |
+  | (pills wrap onto further lines on narrow windows)                   |
   +--------------------------------------------------------------------+
   | RUN MONITOR                                                        |
   | CVRP  active     case 95  trial 8/24      2,287 rows               |
@@ -50,10 +53,14 @@ Full-screen transparent overlay
   | [watchdog rail] run errors 95 watchdog 0 validation 102            |
   |                 infeasible 0 fair-start 0 wall-time 0              |
   | ... active, stalled, or unknown live rows ...                       |
+  | empty state (no runs): what appears here, how a run gets recorded  |
   +--------------------------------------------------------------------+
-  | RECENT RUNS                                                        |
+  | RECENT TERMINAL RUNS     newest first    [cue: scroll right]       |
+  | [cvrp failed 87d 20h ago 1,944 rows] ...                            |
   +--------------------------------------------------------------------+
 ```
+
+Below the breakpoints (`modal.width < 720`, `modal.height < 660`) the card follows the window down to a 360px floor, the modal margins tighten, and the fixed bands shrink; the monitor and history lists scroll within the card instead of pushing past it.
 
 Refresh and close are the only modal actions. Escape and an overlay click also close the modal through a runner independent from refresh. CLI toggle support changes only modal visibility. There are no stop, retry, launch, cleanup, or repair actions.
 

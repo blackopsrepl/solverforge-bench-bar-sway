@@ -4,7 +4,13 @@ The Waybar chip is a compact cached-state summary. The QuickShell modal is the o
 
 The modal uses Fira Code, the SolverForge Linux Hackerman palette, and semantic warning and critical colors. It contains a header, four summary tiles, the current nightly cohort, detailed live run cards, and horizontally scrolling recent terminal runs.
 
+The layout adapts to the window with two breakpoint predicates, mirroring Switchyard's pattern: `narrowLayout` (`modal.width < 720`) widens the card through the viewport, and `shortViewport` (`modal.height < 660`) follows the window down to a 360px floor while tightening the modal margins and shrinking the fixed diagnostic and monitor bands. Cohort pills wrap onto further lines instead of one overflowing row, and the monitor and history lists keep their own scrollbars.
+
 Active and attention membership may overlap: an active run with result issues contributes to both tiles but appears once in the monitor. Each card exposes run-error, watchdog, validation, infeasible, fair-start, and wall-time counters. Terminal warehouse drift is excluded from the live list, chip attention count, and global status; only its neutral stale-row count remains in diagnostics. Recent terminal failures remain history and do not create live attention.
+
+Empty surfaces explain themselves. The run monitor shows what appears there and how a run gets recorded (once a benchmark writes its first warehouse rows the daemon classifies it); the history band states that completed and failed runs will appear newest first. The terminal error branch keeps its dedicated redacted message.
+
+Diagnostics surface at the top of the modal as a read-only banner: a failed warehouse ingest names the redacted error and states that cached data below is unchanged, and a stale snapshot names the staleness with a humanized refresh age. Neither is a control. History cards carry a humanized completion age and, when more runs exist than fit, an explicit "scroll right for more runs" cue plus an AsNeeded horizontal scrollbar.
 
 Current solver elapsed time updates locally once per second. Cache staleness is also derived locally from the snapshot timestamp and configured threshold, so the modal changes to a neutral cached state if refreshes stop. Source observation remains daemon-owned.
 
