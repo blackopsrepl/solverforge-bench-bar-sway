@@ -2,7 +2,7 @@
 
 The Ruby runtime owns all files under `runtime.stateDir`. The directory is mode `0700`; JSON state and lock files are mode `0600`.
 
-`snapshot.json` uses snapshot schema version `1`, independent from application version `0.3.0` and config schema version `1`. It contains:
+`snapshot.json` uses snapshot schema version `1`, independent from application version `0.4.0` and config schema version `1`. It contains:
 
 - `generatedAt` and presenter-owned global `status`.
 - `source`: status, query/success timestamps, latency, and a redacted error.

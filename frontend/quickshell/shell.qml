@@ -410,7 +410,7 @@ ShellRoot {
                     text: value
                     color: accent
                     font.family: root.textFont
-                    font.pixelSize: 23
+                    font.pixelSize: 12
                     font.bold: true
                 }
 
@@ -477,7 +477,9 @@ ShellRoot {
     }
 
     // Streamlined badge: tone carried by a left dot, not a filled pill —
-    // same glanceable status, less width.
+    // same glanceable status, less width. Family spec: the badge carries
+    // radius: 0 explicitly like every other shaped surface, its dot stays a
+    // text glyph, and its label reads the family's 9 secondary size.
     component StateBadge: Rectangle {
         property string label: "unknown"
         property color accent: root.statusColor(label)
@@ -485,6 +487,7 @@ ShellRoot {
         implicitWidth: badgeDot.implicitWidth + 4 + badgeText.implicitWidth + 8
         implicitHeight: 14
         color: "transparent"
+        radius: 0
 
         Text {
             id: badgeDot
@@ -504,7 +507,7 @@ ShellRoot {
             text: label
             color: accent
             font.family: root.textFont
-            font.pixelSize: 8
+            font.pixelSize: 9
         }
     }
 
@@ -682,7 +685,7 @@ ShellRoot {
                 anchors.topMargin: 5
                 anchors.bottomMargin: 0
                 color: Qt.rgba(0, 0, 0, 0.35)
-                radius: 10
+                radius: 0
                 visible: uiAdapter.open
             }
 
@@ -693,7 +696,7 @@ ShellRoot {
                 color: "#0B0C16"
                 border.color: root.statusColor(root.effectiveStatus)
                 border.width: 1
-                radius: 10
+                radius: 0
 
                 MouseArea {
                     anchors.fill: parent
@@ -780,7 +783,7 @@ ShellRoot {
                                     text: "solverforge-bench-bar"
                                     color: "#DDF7FF"
                                     font.family: root.textFont
-                                    font.pixelSize: 24
+                                    font.pixelSize: 21
                                     font.bold: true
                                     elide: Text.ElideRight
                                 }
@@ -987,7 +990,7 @@ ShellRoot {
                                                     text: modelData.benchmarkLabel || modelData.benchmarkName || "benchmark"
                                                     color: "#DDF7FF"
                                                     font.family: root.textFont
-                                                    font.pixelSize: 14
+                                                    font.pixelSize: 15
                                                     font.bold: true
                                                     elide: Text.ElideRight
                                                 }
@@ -1229,7 +1232,7 @@ ShellRoot {
                                             text: (recentCard.modelData.warehouseStatus || "unknown") + "   " + root.humanizeAge(recentCard.modelData.completedAt || recentCard.modelData.createdAt) + "   " + root.compactNumber(recentCard.modelData.resultCount || 0) + " rows"
                                             color: root.statusColor(recentCard.modelData.warehouseStatus || "unknown")
                                             font.family: root.textFont
-                                            font.pixelSize: 8
+                                            font.pixelSize: 9
                                             elide: Text.ElideRight
                                         }
                                     }
