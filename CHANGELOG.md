@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [0.5.1](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.5.0...v0.5.1) (2026-10-14)
+
+
+### Features
+
+* **panel:** restore the vertical budget - content-fit height with a screen-fed monitor band ([787178a](https://github.com/blackopsrepl/solverforge-bench-bar-sway/commit/787178afdc45647818458c7ae5f086f5dc687bb9))
+
 ## [0.5.0](https://github.com/blackopsrepl/solverforge-bench-bar-sway/compare/v0.4.0...v0.5.0) (2026-10-14)
 
 
